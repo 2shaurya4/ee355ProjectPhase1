@@ -9,28 +9,48 @@ Date::Date() {
 }
 
 Date::Date(string dateStr) {
-    char slash;
-    stringstream ss(dateStr);
-    ss >> month;
-    ss >> slash;
-    ss >> day;
-    ss >> slash;
-    ss >> year;
-}
+    if (dateStr.find('/') != string::npos) {
+        char slash;
+        stringstream ss(dateStr);
+        ss >> month;
+        ss >> slash;
+        ss >> day;
+        ss >> slash;
+        ss >> year;
+    } else {
+        string monthStr;
+        char comma;
+        stringstream ss(dateStr);
+        string monthNames[] = {"", "January", "February", "March", "April",
+                               "May", "June", "July", "August", "September",
+                               "October", "November", "December"};
 
-void Date::print_date(string format) {
-    string monthNames[] = {"", "January", "February", "March", "April",
-                           "May", "June", "July", "August", "September",
-                           "October", "November", "December"};
-
-    if (month >= 1 && month <= 12) {
-        cout << monthNames[month] << " " << day << ", " << year << endl;
+        ss >> monthStr;
+        month = 0;
+        for (int i = 1; i <= 12; i++) {
+            if (monthStr == monthNames[i]) {
+                month = i;
+            }
+        }
+        ss >> day;
+        ss >> comma;
+        ss >> year;
     }
 }
 
-string Date::get_date_str() {
+void Date::print_date(string format) {
+    cout << get_date_str(format) << endl;
+}
+
+string Date::get_date_str(string format) {
+    string monthNames[] = {"", "January", "February", "March", "April",
+                           "May", "June", "July", "August", "September",
+                           "October", "November", "December"};
     stringstream ss;
-    ss << month << "/" << day << "/" << year;
+    if (format == "Month D, YYYY" && month >= 1 && month <= 12)
+        ss << monthNames[month] << " " << day << ", " << year;
+    else
+        ss << month << "/" << day << "/" << year;
     return ss.str();
 }
 

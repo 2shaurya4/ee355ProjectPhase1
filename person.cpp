@@ -3,6 +3,25 @@
 #include <fstream>
 #include <sstream>
 
+static string trim(string value) {
+    string::size_type start = value.find_first_not_of(" \t\r\n");
+    string::size_type end = value.find_last_not_of(" \t\r\n");
+    if (start == string::npos) {
+        return "";
+    }
+    return value.substr(start, end - start + 1);
+}
+
+static void parseContactLine(string line, string& type, string& data) {
+    int open = line.find('(');
+    int close = line.find(')');
+    type = trim(line.substr(open + 1, close - open - 1));
+    data = trim(line.substr(close + 1));
+    if (!data.empty() && data[0] == ':') {
+        data = trim(data.substr(1));
+    }
+}
+
 Person::Person() {
     set_person();
 }
@@ -20,18 +39,12 @@ Person::Person(string f_name, string l_name, string b_date, string email_str, st
     this->next = NULL;
     this->prev = NULL;
 
-    // Parse email: "(Type) address"
-    int open = email_str.find('(');
-    int close = email_str.find(')');
-    string eType = email_str.substr(open + 1, close - open - 1);
-    string eAddr = email_str.substr(close + 2);
+    string eType, eAddr;
+    parseContactLine(email_str, eType, eAddr);
     this->email = new Email(eType, eAddr);
 
-    // Parse phone: "(Type) number"
-    open = phone_str.find('(');
-    close = phone_str.find(')');
-    string pType = phone_str.substr(open + 1, close - open - 1);
-    string pNum = phone_str.substr(close + 2);
+    string pType, pNum;
+    parseContactLine(phone_str, pType, pNum);
     this->phone = new Phone(pType, pNum);
 }
 
@@ -98,16 +111,12 @@ void Person::set_person(string filename) {
         emailLine = line5;
     }
 
-    int open = phoneLine.find('(');
-    int close = phoneLine.find(')');
-    string pType = phoneLine.substr(open + 1, close - open - 1);
-    string pNum = phoneLine.substr(close + 2);
+    string pType, pNum;
+    parseContactLine(phoneLine, pType, pNum);
     phone = new Phone(pType, pNum);
 
-    open = emailLine.find('(');
-    close = emailLine.find(')');
-    string eType = emailLine.substr(open + 1, close - open - 1);
-    string eAddr = emailLine.substr(close + 2);
+    string eType, eAddr;
+    parseContactLine(emailLine, eType, eAddr);
     email = new Email(eType, eAddr);
 
     file.close();

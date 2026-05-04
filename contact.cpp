@@ -16,19 +16,19 @@ void Email::set_contact() {
 
 string Email::get_contact(string style) {
     if (style == "full")
-        return "(" + type + ") " + email_addr;
+        return "(" + type + "): " + email_addr;
     else
         return email_addr;
 }
 
 void Email::print() {
-    cout << get_contact() << endl;
+    cout << "Email " << get_contact() << endl;
 }
 
 Phone::Phone(string type, string num) {
     this->type = type;
     string clean = "";
-    for (int i = 0; i < num.length(); i++) {
+    for (string::size_type i = 0; i < num.length(); i++) {
         if (num[i] != '-') {
             clean += num[i];
         }
@@ -43,7 +43,7 @@ void Phone::set_contact() {
     string num;
     getline(cin, num);
     string clean = "";
-    for (int i = 0; i < num.length(); i++) {
+    for (string::size_type i = 0; i < num.length(); i++) {
         if (num[i] != '-') {
             clean += num[i];
         }
@@ -56,7 +56,7 @@ string Phone::get_contact(string style) {
                       phone_num.substr(3, 3) + "-" +
                       phone_num.substr(6, 4);
     if (style == "full") {
-        return "(" + type + ") " + formatted;
+        return "(" + type + "): " + formatted;
     }
     else {
         return formatted;
@@ -64,5 +64,5 @@ string Phone::get_contact(string style) {
 }
 
 void Phone::print() {
-    cout << get_contact() << endl;
+    cout << "Phone " << get_contact() << endl;
 }

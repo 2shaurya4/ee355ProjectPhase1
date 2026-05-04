@@ -10,6 +10,7 @@ class Contact {
 protected:
     string type;
 public:
+    virtual ~Contact() {}
     virtual void print() = 0;
     virtual string get_contact(string style="full") = 0;
     virtual void set_contact() = 0;

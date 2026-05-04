@@ -6,6 +6,15 @@
 #include <dirent.h>
 #include <cstring>
 
+static string trim(string value) {
+    string::size_type start = value.find_first_not_of(" \t\r\n");
+    string::size_type end = value.find_last_not_of(" \t\r\n");
+    if (start == string::npos) {
+        return "";
+    }
+    return value.substr(start, end - start + 1);
+}
+
 Network::Network() {
     head = NULL;
     tail = NULL;
@@ -68,16 +77,27 @@ void Network::loadDB(string filename) {
     tail = NULL;
     count = 0;
 
-    string fname, lname, dateStr, line4, line5, separator;
+    string firstLine, fname, lname, dateStr, line4, line5, separator;
 
-    while (getline(file, fname)) {
-        if (fname.empty()) continue;
-        if (fname[0] == '-') continue;
+    while (getline(file, firstLine)) {
+        firstLine = trim(firstLine);
+        if (firstLine.empty()) continue;
+        if (firstLine[0] == '-') continue;
 
-        getline(file, lname);
-        getline(file, dateStr);
-        getline(file, line4);
-        getline(file, line5);
+        string::size_type comma = firstLine.find(',');
+        if (comma != string::npos) {
+            lname = trim(firstLine.substr(0, comma));
+            fname = trim(firstLine.substr(comma + 1));
+            getline(file, dateStr);
+            getline(file, line4);
+            getline(file, line5);
+        } else {
+            fname = firstLine;
+            getline(file, lname);
+            getline(file, dateStr);
+            getline(file, line4);
+            getline(file, line5);
+        }
 
         string emailLine, phoneLine;
         if (line4.find('@') != string::npos) {
@@ -108,11 +128,10 @@ void Network::saveDB(string filename) {
 
     Person* ptr = head;
     while (ptr != NULL) {
-        file << ptr->f_name << endl;
-        file << ptr->l_name << endl;
-        file << ptr->birthdate->get_date_str() << endl;
-        file << ptr->phone->get_contact() << endl;
-        file << ptr->email->get_contact() << endl;
+        file << ptr->l_name << ", " << ptr->f_name << endl;
+        file << ptr->birthdate->get_date_str("Month D, YYYY") << endl;
+        file << "Phone " << ptr->phone->get_contact() << endl;
+        file << "Email " << ptr->email->get_contact() << endl;
         file << "--------------------" << endl;
         ptr = ptr->next;
     }

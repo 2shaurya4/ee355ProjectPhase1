@@ -16,7 +16,7 @@ public:
     Date();
     Date(string dateStr);
     void print_date(string format = "Month D, YYYY");
-    string get_date_str();
+    string get_date_str(string format = "M/D/YYYY");
     bool operator==(const Date& rhs);
 };
 
